@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 function FeedbackStats({ feedback }) {
   //calculate ratings average
   let average =
@@ -14,5 +16,9 @@ function FeedbackStats({ feedback }) {
     </div>
   );
 }
+
+FeedbackStats.propTypes = {
+  feedback: PropTypes.array.isRequired,
+};
 
 export default FeedbackStats;
