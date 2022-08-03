@@ -1,21 +1,31 @@
 import { v4 as uuidv4 } from 'uuid';
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 // move global state + any fns to manipulate that state into context. bring directly into components directly. little projects is fine, but as project grows, amount of state and fns that you have to proll drill esp if you have 3-4 component lvls deep that you're passing props manually it can get VERY messy.
 
 const FeedbackContext = createContext();
 
 export const FeedbackProvider = ({ children }) => {
-  const [feedback, setFeedback] = useState([
-    { id: 1, text: 'This is feedback item 1', rating: 10 },
-    { id: 2, text: 'This is feedback item 2', rating: 5 },
-    { id: 3, text: 'This is feedback item 3', rating: 7 },
-  ]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [feedback, setFeedback] = useState([]);
 
   const [feedbackEdit, setFeedbackEdit] = useState({
     item: {},
     edit: false,
   });
 
+  useEffect(() => {
+    fetchFeedback();
+  }, []);
+
+  //fetch feedback
+  const fetchFeedback = async () => {
+    const response = await fetch(
+      `http://localhost:3001/feedback?_sort=id&_order=desc`
+    );
+    const data = await response.json();
+    setFeedback(data);
+    setIsLoading(false);
+  };
   // add feedback
   const addFeedback = (newFeedback) => {
     newFeedback.id = uuidv4();
@@ -53,6 +63,7 @@ export const FeedbackProvider = ({ children }) => {
         feedback,
         deleteFeedback,
         addFeedback,
+        isLoading,
         editFeedback,
         feedbackEdit,
         updateFeedback,
